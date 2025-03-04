@@ -1,7 +1,10 @@
 #!/bin/bash
 
-# Очистка ненужных snap пакетов (кроме системных)
-snap list | awk 'NR>1 {print $1}' | grep -vE 'core|snapd' | xargs -n1 sudo snap remove --purge
+# Очистка старых версий snap пакетов (кроме системных и Firefox)
+snap list | awk 'NR>1 {print $1}' | grep -vE 'core|snapd|firefox' | while read package; do
+  # Удаление старых версий пакетов Snap (кроме текущей)
+  snap versions $package | grep -E 'disabled|inactive' | awk '{print $1}' | xargs -n1 sudo snap remove --purge
+done
 
 # Очистка системы от ненужных пакетов
 sudo apt autoremove -y
