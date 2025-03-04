@@ -1,11 +1,7 @@
 #!/bin/bash
 
-# Остановка и удаление всех snap пакетов
-snap list | awk 'NR>1 {print $1}' | xargs -n1 sudo snap remove --purge
-
-# Удаление snapd
-sudo apt remove --purge snapd -y
-sudo rm -rf /var/snap /var/lib/snapd /snap /var/cache/snapd
+# Очистка ненужных snap пакетов (кроме системных)
+snap list | awk 'NR>1 {print $1}' | grep -vE 'core|snapd' | xargs -n1 sudo snap remove --purge
 
 # Очистка системы от ненужных пакетов
 sudo apt autoremove -y
