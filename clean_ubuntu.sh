@@ -1,10 +1,15 @@
 #!/bin/bash
 
-# Очистка старых версий snap пакетов (кроме системных, Firefox и Chrome)
-snap list | awk 'NR>1 {print $1}' | grep -vE 'core|snapd|firefox|chromium' | while read package; do
-  # Удаление старых версий пакетов Snap (кроме текущей)
-  snap versions $package | grep -E 'disabled|inactive' | awk '{print $1}' | xargs -n1 sudo snap remove --purge
-done
+# Проверка, установлен ли snap
+if command -v snap &> /dev/null; then
+  # Очистка старых версий snap пакетов (кроме системных, Firefox и Chrome)
+  snap list | awk 'NR>1 {print $1}' | grep -vE 'core|snapd|firefox|chromium' | while read package; do
+    # Удаление старых версий пакетов Snap (кроме текущей)
+    snap versions $package | grep -E 'disabled|inactive' | awk '{print $1}' | xargs -n1 sudo snap remove --purge
+  done
+else
+  echo "Snap не установлен, пропуск очистки Snap пакетов."
+fi
 
 # Очистка системы от ненужных пакетов
 sudo apt autoremove -y
